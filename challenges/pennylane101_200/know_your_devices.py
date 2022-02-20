@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import sys
+
 import pennylane as qml
 from pennylane import numpy as np
 
@@ -32,9 +33,12 @@ def compare_circuits(num_wires, params):
     """
 
     # QHACK #
-    # define devices
+    pure_device = qml.device("default.qubit", wires=num_wires)
+    mixed_device = qml.device("default.mixed", wires=num_wires)
 
-    # add a decorator here
+    pure_angles, mixed_angles = params[0], params[1]
+
+    @qml.qnode(pure_device)
     def pure_circuit():
         """A circuit that contains `num_wires` y-rotation gates.
         The argument params[0] are the parameters you should use here to define the y-rotations.
@@ -42,10 +46,12 @@ def compare_circuits(num_wires, params):
         Returns:
             - (np.tensor): A state vector
         """
-        # create the circuit here
+        for i, angle in enumerate(pure_angles):
+            qml.RY(angle, wires=i)
+
         return qml.state()
 
-    # add a decorator here
+    @qml.qnode(mixed_device)
     def mixed_circuit():
         """A circuit that contains `num_wires` y-rotation gates.
         The argument params[1] are the parameters you should use here to define the y-rotations.
@@ -53,7 +59,9 @@ def compare_circuits(num_wires, params):
         Returns:
             - (np.tensor): A density matrix
         """
-        # create the circuit here
+        for i, angle in enumerate(mixed_angles):
+            qml.RY(angle, wires=i)
+
         return qml.state()
 
     # QHACK #
