@@ -3,7 +3,7 @@
 ### PennyLane 101
 - [x] order matters
 - [x] know your devices
-- [ ] superdense coding
+- [x] superdense coding
 - [ ] finite difference gradient
 - [ ] bitflip error code
 
