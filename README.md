@@ -1,7 +1,7 @@
 # qhack coding challenges
 
 ### PennyLane 101
-- [ ] order matters
+- [x] order matters
 - [ ] know your devices
 - [ ] superdense coding
 - [ ] finite difference gradient

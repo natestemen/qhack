@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import sys
+
 import pennylane as qml
 from pennylane import numpy as np
 
@@ -16,8 +17,23 @@ def compare_circuits(angles):
     """
 
     # QHACK #
+    device = qml.device("default.qubit", wires=1)
 
-    # define a device and quantum functions/circuits here
+    theta1, theta2 = angles
+
+    @qml.qnode(device)
+    def XY_rotation(t1, t2):
+        qml.RX(t1, wires=0)
+        qml.RY(t2, wires=0)
+        return qml.expval(qml.PauliX(0))
+
+    @qml.qnode(device)
+    def YX_rotation(t1, t2):
+        qml.RY(t1, wires=0)
+        qml.RX(t2, wires=0)
+        return qml.expval(qml.PauliX(0))
+
+    return abs(XY_rotation(theta1, theta2) - YX_rotation(theta2, theta1))
 
     # QHACK #
 
