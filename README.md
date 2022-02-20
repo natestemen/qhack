@@ -4,7 +4,7 @@
 - [x] order matters
 - [x] know your devices
 - [x] superdense coding
-- [ ] finite difference gradient
+- [x] finite difference gradient
 - [ ] bitflip error code
 
 ### Algorithms

@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import sys
+
 import pennylane as qml
 from pennylane import numpy as np
 
@@ -8,7 +9,7 @@ dev = qml.device("default.qubit", wires=3)
 
 
 def my_finite_diff_grad(params):
-    """Function that returns the gradients of the cost function (defined below) with respect 
+    """Function that returns the gradients of the cost function (defined below) with respect
     to all parameters in params.
 
     Args:
@@ -18,18 +19,23 @@ def my_finite_diff_grad(params):
         - gradients (np.ndarray): the gradient w.r.t. each parameter
     """
 
+    epsilon = 0.0001
     gradients = np.zeros([len(params)])
     for i in range(len(params)):
-        # QHACK # 
-
         # QHACK #
-
+        params[i] += epsilon / 2
+        up = cost(params)
+        params[i] -= epsilon
+        down = cost(params)
+        gradients[i] = (up - down) / epsilon
+        params[i] += epsilon / 2
+        # QHACK #
     return gradients
 
 
 def variational_circuit(params):
     """A layered variational circuit. The first layer comprises of x, y, and z rotations on wires
-    0, 1, and 2, respectively. The second layer is a ring of CNOT gates. The final layer comprises 
+    0, 1, and 2, respectively. The second layer is a ring of CNOT gates. The final layer comprises
     of x, y, and z rotations on wires 0, 1, and 2, respectively.
     """
 
