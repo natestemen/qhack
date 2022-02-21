@@ -111,8 +111,7 @@ def relative_error(indices):
 
 if __name__ == '__main__':
     # DO NOT MODIFY anything in this code block
-    #inputs = sys.stdin.read().split(",")
-    inputs = [0,2,3,5,6]
+    inputs = sys.stdin.read().split(",")
     lst=[int(i) for i in inputs]
     output = relative_error(lst)
     print(f"{output}")
