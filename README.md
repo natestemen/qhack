@@ -8,9 +8,9 @@
 - [ ] bitflip error code
 
 ### Algorithms
-- [ ] Deutsch Jozsa
+- [x] Deutsch Jozsa
 - [ ] adapting to the topology
-- [ ] QFT adder
+- [x] QFT adder
 - [ ] quantum counting
 - [ ] Deutsch Jozsa strikes again
 
