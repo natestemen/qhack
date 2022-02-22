@@ -11,7 +11,7 @@
 - [x] Deutsch Jozsa
 - [ ] adapting to the topology
 - [x] QFT adder
-- [ ] quantum counting
+- [x] quantum counting
 - [ ] Deutsch Jozsa strikes again
 
 ### Games
