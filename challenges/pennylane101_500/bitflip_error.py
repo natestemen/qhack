@@ -64,7 +64,7 @@ def circuit(p, alpha, tampered_wire):
 def density_matrix(alpha):
     """Creates a density matrix from a pure state."""
     # DO NOT MODIFY anything in this code block
-    psi = alpha * np.array([1, 0], dtype=float) + np.sqrt(1 - alpha ** 2) * np.array(
+    psi = alpha * np.array([1, 0], dtype=float) + np.sqrt(1 - alpha**2) * np.array(
         [0, 1], dtype=float
     )
     psi = np.kron(psi, np.array([1, 0, 0, 0], dtype=float))
