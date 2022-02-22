@@ -1,12 +1,13 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
+
 import pennylane as qml
 from pennylane import numpy as np
 from pennylane.templates import QuantumPhaseEstimation
 
-
 dev = qml.device("default.qubit", wires=8)
+
 
 def oracle_matrix(indices):
     """Return the oracle matrix for a secret combination.
@@ -19,6 +20,9 @@ def oracle_matrix(indices):
     """
 
     # QHACK #
+    my_array = np.identity(16)
+    for i in indices:
+        my_array[i, i] = -1
 
     # QHACK #
 
@@ -29,8 +33,8 @@ def diffusion_matrix():
 
     # DO NOT MODIFY anything in this code block
 
-    psi_piece = (1 / 2 ** 4) * np.ones(2 ** 4)
-    ident_piece = np.eye(2 ** 4)
+    psi_piece = (1 / 2**4) * np.ones(2**4)
+    ident_piece = np.eye(2**4)
     return 2 * psi_piece - ident_piece
 
 
@@ -42,6 +46,7 @@ def grover_operator(indices):
 
 
 dev = qml.device("default.qubit", wires=8)
+
 
 @qml.qnode(dev)
 def circuit(indices):
@@ -56,15 +61,22 @@ def circuit(indices):
 
     # QHACK #
 
-    target_wires =
+    target_wires = [i for i in range(0, 4)]
 
-    estimation_wires =
+    estimation_wires = [ii for ii in range(4, 8)]
 
-    # Build your circuit here
+    for i in target_wires:
+        qml.Hadamard(wires=i)
 
+    qml.QuantumPhaseEstimation(
+        grover_operator(indices),
+        target_wires=target_wires,
+        estimation_wires=estimation_wires,
+    )
     # QHACK #
 
     return qml.probs(estimation_wires)
+
 
 def number_of_solutions(indices):
     """Implement the formula given in the problem statement to find the number of solutions from the output of your circuit
@@ -77,8 +89,13 @@ def number_of_solutions(indices):
     """
 
     # QHACK #
+    measurement = circuit(indices)
+    number_of_solution = np.argmax(measurement)
+    M = 16 * (np.sin(np.pi / 16 * number_of_solution) ** 2)
 
+    return M
     # QHACK #
+
 
 def relative_error(indices):
     """Calculate the relative error of the quantum counting estimation
@@ -86,21 +103,22 @@ def relative_error(indices):
     Args:
         - indices (list(int)): A list of bits representing the elements that map to 1.
 
-    Returns: 
+    Returns:
         - (float): relative error
     """
 
     # QHACK #
 
-    rel_err = 
+    rel_err = (number_of_solutions(indices) - len(indices)) / len(indices) * 100
 
     # QHACK #
 
     return rel_err
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # DO NOT MODIFY anything in this code block
     inputs = sys.stdin.read().split(",")
-    lst=[int(i) for i in inputs]
+    lst = [int(i) for i in inputs]
     output = relative_error(lst)
     print(f"{output}")
