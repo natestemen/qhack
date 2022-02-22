@@ -19,7 +19,8 @@ def binary_list(m, n):
 
     arr = []
     # QHACK #
-
+    format_string = f"{{0:0{n}b}}"
+    arr = list(map(int, list(format_string.format(m))))
     # QHACK #
     return arr
 
@@ -38,7 +39,8 @@ def basis_states(n):
     arr = []
 
     # QHACK #
-
+    for i in range(2**n):
+        arr.append(binary_list(i, n))
     # QHACK #
 
     return arr
@@ -57,6 +59,17 @@ def is_particle_preserving(circuit, n):
     """
 
     # QHACK #
+
+    all_states = basis_states(n)
+    for basis_state in all_states:
+        hamming_weight_before = sum(basis_state)
+        circuit_state = circuit(basis_state)
+        for i, prob in enumerate(circuit_state):
+            if prob != 0:
+                hamming_weight_after = sum(all_states[i])
+                if hamming_weight_before != hamming_weight_after:
+                    return False
+        return True
 
     # QHACK #
 

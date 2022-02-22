@@ -22,7 +22,7 @@
 - [ ] switches 
 
 ### Quantum Chemistry
-- [ ] particle conservation
+- [x] particle conservation
 - [ ] optimizing measurements
 - [ ] Givens universality
 - [ ] triple Givens
