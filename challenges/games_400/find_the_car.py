@@ -1,9 +1,9 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
-from pennylane import numpy as np
-import pennylane as qml
 
+import pennylane as qml
+from pennylane import numpy as np
 
 dev = qml.device("default.qubit", wires=[0, 1, "sol"], shots=1)
 

@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import sys
+
 import pennylane as qml
-from pennylane import numpy as np
 import pennylane.optimize as optimize
+from pennylane import numpy as np
 
 DATA_SIZE = 250
 

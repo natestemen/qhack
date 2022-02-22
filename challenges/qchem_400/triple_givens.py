@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import sys
+
 import pennylane as qml
 from pennylane import numpy as np
 

@@ -1,8 +1,9 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
-from pennylane import numpy as np
+
 import pennylane as qml
+from pennylane import numpy as np
 
 
 def qfunc_adder(m, wires):
@@ -18,7 +19,7 @@ def qfunc_adder(m, wires):
     # QHACK #
 
     for i in wires:
-        qml.U1(np.pi * m / 2**i, wires=i)
+        qml.U1(np.pi * m / 2 ** i, wires=i)
 
     # QHACK #
 

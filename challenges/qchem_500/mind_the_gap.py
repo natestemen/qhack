@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import sys
+
 import pennylane as qml
-from pennylane import numpy as np
 from pennylane import hf
+from pennylane import numpy as np
 
 
 def ground_state_VQE(H):

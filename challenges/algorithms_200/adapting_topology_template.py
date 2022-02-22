@@ -1,9 +1,9 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
+
 import pennylane as qml
 from pennylane import numpy as np
-
 
 graph = {
     0: [1],
@@ -38,14 +38,13 @@ def n_swaps(cnot):
         graph_[wire_1] = np.sum([graph[i] for i in graph_[wire_1]])
         number_of_swaps += 1
     return number_of_swaps * 2
-        
-        
+
     # QHACK #
 
 
 if __name__ == "__main__":
     # DO NOT MODIFY anything in this code block
-    #inputs = sys.stdin.read().split(",")
-    inputs = [2,8]
+    # inputs = sys.stdin.read().split(",")
+    inputs = [2, 8]
     output = n_swaps(qml.CNOT(wires=[int(i) for i in inputs]))
     print(f"{output}")

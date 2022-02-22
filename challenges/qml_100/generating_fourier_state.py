@@ -1,8 +1,9 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
-from pennylane import numpy as np
+
 import pennylane as qml
+from pennylane import numpy as np
 
 
 def generating_fourier_state(n_qubits, m):
@@ -83,4 +84,11 @@ if __name__ == "__main__":
             qml.apply(op)
         return qml.state()
 
-    print(",".join([f"{p.real.round(5)},{p.imag.round(5)}" for p in check_with_arbitrary_state()]))
+    print(
+        ",".join(
+            [
+                f"{p.real.round(5)},{p.imag.round(5)}"
+                for p in check_with_arbitrary_state()
+            ]
+        )
+    )

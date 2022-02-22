@@ -33,8 +33,8 @@ def diffusion_matrix():
 
     # DO NOT MODIFY anything in this code block
 
-    psi_piece = (1 / 2**4) * np.ones(2**4)
-    ident_piece = np.eye(2**4)
+    psi_piece = (1 / 2 ** 4) * np.ones(2 ** 4)
+    ident_piece = np.eye(2 ** 4)
     return 2 * psi_piece - ident_piece
 
 

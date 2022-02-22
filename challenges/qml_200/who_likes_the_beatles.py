@@ -1,8 +1,9 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 
 import sys
-from pennylane import numpy as np
+
 import pennylane as qml
+from pennylane import numpy as np
 
 
 def distance(A, B):
