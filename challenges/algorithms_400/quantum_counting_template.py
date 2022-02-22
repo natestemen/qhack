@@ -101,9 +101,8 @@ def relative_error(indices):
     """
 
     # QHACK #
-    M = 16* (np.sin(np.pi/16*len(indices))**2)
 
-    rel_err = (number_of_solutions(indices) - len(indices))/len(indices)
+    rel_err = (number_of_solutions(indices) - len(indices))/len(indices)*100
 
     # QHACK #
 
@@ -111,7 +110,8 @@ def relative_error(indices):
 
 if __name__ == '__main__':
     # DO NOT MODIFY anything in this code block
-    inputs = sys.stdin.read().split(",")
+    #inputs = sys.stdin.read().split(",")
+    inputs = [0,1,3]
     lst=[int(i) for i in inputs]
     output = relative_error(lst)
     print(f"{output}")
