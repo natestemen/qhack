@@ -28,12 +28,6 @@ def generating_fourier_state(n_qubits, m):
 
         # QHACK #
 
-        binary_rep = list(map(int, f"{{0:0{n_qubits}b}}".format(m)))
-        for wire, digit in enumerate(binary_rep):
-            if digit == 1:
-                qml.PauliX(wires=wire)
-
-        # Add the template of the statement with the angles passed as an argument.
         for wire, angle in enumerate(angles):
             qml.Hadamard(wire)
             qml.RZ(angle, wires=wire)
@@ -55,8 +49,11 @@ def generating_fourier_state(n_qubits, m):
         probs = circuit(angles)
         # QHACK #
 
+        M = np.zeros(len(probs))
+        M[m] = 1
+
         # The return error should be smaller when the state m is more likely to be obtained.
-        return sum(probs**2) - (probs[m] ** 2)
+        return sum((probs - M) ** 2)
 
         # QHACK #
 
@@ -64,7 +61,7 @@ def generating_fourier_state(n_qubits, m):
     # Do not modify anything from here.
 
     opt = qml.AdamOptimizer(stepsize=0.8)
-    epochs = 5000
+    epochs = 3000
 
     angles = np.zeros(n_qubits, requires_grad=True)
 

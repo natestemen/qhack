@@ -29,7 +29,7 @@
 - [ ] mind the gap
 
 ### Quantum Machine Learning
-- [ ] generating Fourier basis
+- [x] generating Fourier basis
 - [x] who likes the beatles
 - [ ] Ising on the cake
 - [ ] building qRAM
