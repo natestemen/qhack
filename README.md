@@ -30,7 +30,7 @@
 
 ### Quantum Machine Learning
 - [ ] generating Fourier basis
-- [ ] who likes the beatles
+- [x] who likes the beatles
 - [ ] Ising on the cake
 - [ ] building qRAM
 - [ ] UDMIS

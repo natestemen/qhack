@@ -19,11 +19,9 @@ def distance(A, B):
 
     # QHACK #
 
-    # The Swap test is a method that allows you to calculate |<A|B>|^2 , you could use it to help you.
-    # The qml.AmplitudeEmbedding operator could help you too.
-
-    # dev = qml.device("default.qubit", ...
-    # @qml.qnode(dev)
+    A = np.array(A) / np.linalg.norm(A)
+    B = np.array(B) / np.linalg.norm(B)
+    return np.linalg.norm(A - B)
 
     # QHACK #
 
