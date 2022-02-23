@@ -9,7 +9,7 @@
 
 ### Algorithms
 - [x] Deutsch Jozsa
-- [ ] adapting to the topology
+- [x] adapting to the topology
 - [x] QFT adder
 - [x] quantum counting
 - [ ] Deutsch Jozsa strikes again

@@ -3,6 +3,7 @@
 import sys
 
 import pennylane as qml
+import networkx as nx
 from pennylane import numpy as np
 
 graph = {
@@ -30,6 +31,13 @@ def n_swaps(cnot):
     """
 
     # QHACK #
+
+    G = nx.Graph(graph)
+    start, end = cnot.wires[0], cnot.wires[1]
+    shortest_path = nx.shortest_path(G, start, end)
+    if len(shortest_path) == 2:
+        return 0
+    return (len(nx.shortest_path(G, start, end)) - 2) * 2
 
     # QHACK #
 
