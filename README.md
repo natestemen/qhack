@@ -19,7 +19,7 @@
 - [ ] CHSH game
 - [ ] bomb tester
 - [ ] find the car
-- [ ] switches 
+- [x] switches 
 
 ### Quantum Chemistry
 - [x] particle conservation
