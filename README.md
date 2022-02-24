@@ -5,7 +5,7 @@
 - [x] know your devices
 - [x] superdense coding
 - [x] finite difference gradient
-- [ ] bitflip error code
+- [x] bitflip error code
 
 ### Algorithms
 - [x] Deutsch Jozsa
