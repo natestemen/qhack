@@ -23,7 +23,7 @@
 
 ### Quantum Chemistry
 - [x] particle conservation
-- [ ] optimizing measurements
+- [x] optimizing measurements
 - [x] Givens universality
 - [ ] triple Givens
 - [ ] mind the gap
