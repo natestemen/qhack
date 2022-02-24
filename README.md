@@ -33,4 +33,4 @@
 - [x] who likes the beatles
 - [ ] Ising on the cake
 - [x] building qRAM
-- [ ] UDMIS
+- [x] UDMIS

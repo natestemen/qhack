@@ -25,8 +25,26 @@ def hamiltonian_coeffs_and_obs(graph):
     coeffs = []
 
     # QHACK #
+    for i in range(num_vertices):
+        coeffs.append(-1 / 2)
+        obs.append(qml.PauliZ(i))
 
-    # create the Hamiltonian coeffs and obs variables here
+        coeffs.append(-1 / 2)
+        obs.append(qml.Identity(i))
+
+    for (i, j), edge in np.ndenumerate(E):
+        if edge:
+            coeffs.append(u / 4)
+            obs.append(qml.PauliZ(i) @ qml.PauliZ(j))
+
+            coeffs.append(u / 4)
+            obs.append(qml.PauliZ(i))
+
+            coeffs.append(u / 4)
+            obs.append(qml.PauliZ(j))
+
+            coeffs.append(u / 4)
+            obs.append(qml.Identity(i) @ qml.Identity(j))
 
     # QHACK #
 
@@ -69,7 +87,11 @@ def variational_circuit(params, num_vertices):
 
     # QHACK #
 
-    # create your variational circuit here
+    all_wires = range(num_vertices)
+    qml.broadcast(qml.RX, wires=all_wires, parameters=params[:, 0], pattern="single")
+    qml.broadcast(qml.CZ, wires=all_wires, pattern="chain")
+    qml.broadcast(qml.RY, wires=all_wires, parameters=params[:, 1], pattern="single")
+    qml.broadcast(qml.Hadamard, wires=all_wires, pattern="single")
 
     # QHACK #
 
@@ -95,11 +117,9 @@ def train_circuit(num_vertices, H):
 
     # QHACK #
 
-    # define your trainable parameters and optimizer here
-    # change the number of training iterations, `epochs`, if you want to
-    # just be aware of the 80s time limit!
-
-    epochs = 500
+    params = np.zeros((num_vertices, 2))
+    opt = qml.AdamOptimizer(1 / 6)
+    epochs = 300
 
     # QHACK #
 
