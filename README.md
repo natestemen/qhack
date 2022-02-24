@@ -16,9 +16,9 @@
 
 ### Games
 - [x] tardigrade masquerade
-- [ ] CHSH game
-- [ ] bomb tester
-- [ ] find the car
+- [x] CHSH game
+- [x] bomb tester
+- [x] find the car
 - [x] switches 
 
 ### Quantum Chemistry
