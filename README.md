@@ -32,5 +32,5 @@
 - [x] generating Fourier basis
 - [x] who likes the beatles
 - [ ] Ising on the cake
-- [ ] building qRAM
+- [x] building qRAM
 - [ ] UDMIS

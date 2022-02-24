@@ -30,6 +30,14 @@ def qRAM(thetas):
         # QHACK #
 
         # Create your circuit: the first three qubits will refer to the index, the fourth to the RY rotation.
+        state = np.zeros(2**4)
+        for i, theta in enumerate(thetas):
+            # binary_rep = np.binary_repr(i, width=3)
+            i = 2 * i
+            state[i] = np.cos(theta / 2)
+            state[i + 1] = np.sin(theta / 2)
+
+        qml.QubitStateVector(state / np.linalg.norm(state), wires=range(4))
 
         # QHACK #
 
