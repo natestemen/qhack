@@ -15,7 +15,7 @@
 - [ ] Deutsch Jozsa strikes again
 
 ### Games
-- [ ] tardigrade masquerade
+- [x] tardigrade masquerade
 - [ ] CHSH game
 - [ ] bomb tester
 - [ ] find the car

@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-
 import sys
-
 import pennylane as qml
 from pennylane import numpy as np
 
@@ -29,6 +26,21 @@ def compute_entanglement(theta):
     dev = qml.device("default.qubit", wires=3)
 
     # QHACK #
+    @qml.qnode(dev)
+    
+    def circuitABT(theta):
+        qml.Hadamard(wires=0)
+        qml.CRY(np.pi-theta,wires=[0,1])
+        qml.Toffoli(wires=[0,1,2])
+        qml.CNOT(wires=[0,2])
+        qml.PauliX(wires=0)
+        return qml.density_matrix(wires=1)
+    sampleABT = circuitABT(theta)
+    
+    sampleAB = np.identity(2)/2
+    
+    return second_renyi_entropy(sampleAB), second_renyi_entropy(sampleABT)
+
 
     # QHACK #
 
