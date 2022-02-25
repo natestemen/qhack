@@ -12,7 +12,7 @@
 - [x] adapting to the topology
 - [x] QFT adder
 - [x] quantum counting
-- [ ] Deutsch Jozsa strikes again
+- [x] Deutsch Jozsa strikes again
 
 ### Games
 - [x] tardigrade masquerade
