@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-
 import pennylane as qml
-import pennylane.optimize as optimize
 from pennylane import numpy as np
+import pennylane.optimize as optimize
 
 DATA_SIZE = 250
 
@@ -69,32 +68,69 @@ def classify_ising_data(ising_configs, labels):
 
     # Define a variational circuit below with your needed arguments and return something meaningful
     @qml.qnode(dev)
-    def circuit(# delete this comment and put arguments here):
-
+    def circuit(configs,params):
+        
+        for i in range(num_wires):
+            qml.RY(configs[i]*params[i] + params[i+num_wires],wires=[i])
+        for j in range(1,num_wires):
+            qml.CNOT(wires=[j-1,j])
+            
+        return qml.probs(wires=num_wires-1)
+    
     # Define a cost function below with your needed arguments
-    def cost(# delete this comment and put arguments here):
+    def cost(params):
 
         # QHACK #
         
-        # Insert an expression for your model predictions here
-        predictions = 
+        Y = labels
+        
+        predictions = np.zeros(DATA_SIZE)
+        
+        for k in range(DATA_SIZE):
+             
+            prob = circuit(ising_configs[k],params)[0]
+            predictions[k] = np.around(prob*2-1)
+
+             
 
         # QHACK #
 
         return square_loss(Y, predictions) # DO NOT MODIFY this line
+    
 
-    # optimize your circuit here
+
+    init_params = np.array([1.,1.,1.,1.,0.1,0.1,0.1,0.1])
+    opt = qml.AdamOptimizer(stepsize=0.1)
+    steps = 3
+    params = init_params
+    
+
+    for m in range(steps):
+        #print(cost(params))
+        params = opt.step(cost, params)
+        
 
     # QHACK #
-
+ 
+    predictions = np.zeros(DATA_SIZE)
+    for kk in range(DATA_SIZE):
+         predictions[kk] = np.around(circuit(ising_configs[kk],params)[0])
     return predictions
+    #return params
 
 
 if __name__ == "__main__":
-    inputs = np.array(
+    '''inputs = np.array(
         sys.stdin.read().split(","), dtype=int, requires_grad=False
+    ).reshape(DATA_SIZE, -1)'''
+    inputs = np.array(
+        [0,0,1,0,-1,0,0,0,0,1,0,0,1,0,-1,0,0,0,0,1,0,0,0,0,-1,1,1,0,1,-1,0,0,1,0,-1,1,0,0,1,-1,0,0,0,0,1,1,1,1,1,1,1,0,1,0,-1,0,1,0,1,-1,1,0,0,1,-1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,-1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,-1,0,1,0,1,-1,1,1,1,1,1,0,1,1,0,-1,1,0,1,1,-1,0,0,0,1,-1,0,0,1,0,-1,1,0,0,0,-1,0,0,0,0,1,0,0,0,1,-1,0,0,1,1,-1,0,0,0,0,1,1,1,1,0,-1,1,1,1,1,1,1,0,1,0,-1,1,0,0,0,-1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,0,0,-1,1,1,1,1,1,0,0,0,1,-1,1,1,1,1,1,1,1,0,1,-1,0,1,0,0,-1,1,1,1,1,1,0,0,1,1,-1,0,0,0,0,1,1,0,0,0,-1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,-1,0,0,0,0,1,1,1,0,1,-1,0,0,0,0,1,1,0,1,0,-1,1,1,0,1,-1,0,0,0,0,1,1,1,1,1,-1,1,1,1,1,1,1,0,0,1,-1,0,0,0,0,1,0,0,0,1,-1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,0,-1,1,0,1,1,-1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,-1,0,0,0,0,1,0,1,0,0,-1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,-1,1,1,1,1,1,0,0,0,0,1,0,0,1,1,-1,0,1,1,1,-1,0,1,1,0,-1,1,0,0,0,-1,1,1,1,1,1,0,1,1,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,-1,0,0,0,0,1,1,0,1,0,-1,0,0,0,0,1,1,0,0,1,-1,0,1,1,1,-1,1,0,0,0,-1,0,0,0,0,1,1,1,1,1,-1,1,1,1,0,-1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,-1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,-1,1,0,0,1,-1,0,0,1,1,-1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,0,0,1,-1,1,1,1,1,1,0,1,0,1,-1,0,1,0,0,-1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,-1,0,0,1,0,-1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,-1,1,1,1,1,1,0,0,0,0,1,1,0,0,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,-1,0,1,0,0,-1,1,1,1,1,1,0,0,0,0,-1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,-1,1,1,1,1,1,0,1,0,0,-1,1,1,1,1,1,0,0,1,0,-1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0,-1,0,0,0,0,1,0,1,0,0,-1,1,0,1,0,-1,0,1,1,0,-1,1,1,0,0,-1,0,1,1,0,-1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,-1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,-1,0,0,0,0,1,1,0,0,1,-1,1,1,0,0,-1,0,0,0,0,-1,0,0,0,0,1,0,0,0,1,-1,1,1,1,1,1,1,0,0,1,-1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,-1,0,0,0,0,1,1,0,0,1,-1,1,0,0,0,-1,0,0,0,0,1,1,0,0,0,-1,1,0,0,1,-1,1,0,0,0,-1,1,0,0,1,-1,1,1,0,1,-1,0,0,0,0,1,0,1,0,1,-1,0,0,1,1,-1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,-1,0,1,1,1,-1,0,0,0,0,1,1,0,0,0,-1,0,1,1,0,-1,0,0,0,0,-1,0,0,0,0,1,1,1,1,1,1,1,1,0,1,-1,0,0,0,0,1,0,0,1,1,-1,1,1,1,1,-1,0,0,0,0,-1,0,0,0,0,1,1,0,0,0,-1,0,0,0,0,1,1,1,1,1,1,0,0,1,0,-1,1,0,0,0,-1,0,0,0,0,1,1,0,1,0,-1,1,0,0,1,-1,0,0,1,1,-1,1,1,0,0,-1,1,0,1,1,-1,0,0,0,0,1,1,1,1,1,1,1,1,0,1,-1,1,1,1,1,1,1,0,0,1,-1,1,0,0,0,-1,0,0,0,0,1,0,0,0,0,-1,1,0,0,1,-1,1,1,1,1,-1,0,0,0,0,-1,1,1,0,0,-1,1,1,1,1,1,1,1,1,1,-1,0,0,0,0,1,0,0,0,1,-1,0,1,1,1,-1,1,1,1,1,1,0,0,0,0,-1,1,0,1,1,-1,1,1,1,0,-1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,0,0,-1
+    ], dtype=int, requires_grad=False
     ).reshape(DATA_SIZE, -1)
+    
     ising_configs = inputs[:, :-1]
     labels = inputs[:, -1]
     predictions = classify_ising_data(ising_configs, labels)
-    print(*predictions, sep=",")
+    #print(*predictions, sep=",")
+    print(predictions)
+    
