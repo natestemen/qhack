@@ -25,7 +25,7 @@
 - [x] particle conservation
 - [x] optimizing measurements
 - [x] Givens universality
-- [ ] triple Givens
+- [x] triple Givens
 - [ ] mind the gap
 
 ### Quantum Machine Learning
