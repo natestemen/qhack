@@ -58,32 +58,72 @@ def classify_ising_data(ising_configs, labels):
     Returns:
         - predictions (list(int)): Your final model predictions
 
-    Feel free to add any other functions than `cost` and `circuit` within the "# QHACK #" markers 
+    Feel free to add any other functions than `cost` and `circuit` within the "# QHACK #" markers
     that you might need.
     """
 
     # QHACK #
 
-    num_wires = ising_configs.shape[1] 
-    dev = qml.device("default.qubit", wires=num_wires) 
+    num_wires = ising_configs.shape[1]
+    dev = qml.device("default.qubit", wires=num_wires)
 
     # Define a variational circuit below with your needed arguments and return something meaningful
     @qml.qnode(dev)
-    def circuit(# delete this comment and put arguments here):
+    def circuit(configs, params):
+
+        angles = [
+            configs[i] * params[i] + params[i + num_wires] for i in range(num_wires)
+        ]
+        qml.broadcast(
+            qml.RY,
+            wires=range(num_wires),
+            parameters=angles,
+            pattern="single",
+        )
+        qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
+        qml.broadcast(
+            qml.RY,
+            wires=range(num_wires),
+            parameters=angles,
+            pattern="single",
+        )
+        qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
+        qml.broadcast(
+            qml.RY,
+            wires=range(num_wires),
+            parameters=angles,
+            pattern="single",
+        )
+        qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
+
+        return qml.probs(wires=3)
 
     # Define a cost function below with your needed arguments
-    def cost(# delete this comment and put arguments here):
-
-        # QHACK #
-        
-        # Insert an expression for your model predictions here
-        predictions = 
+    def cost(params):
 
         # QHACK #
 
-        return square_loss(Y, predictions) # DO NOT MODIFY this line
+        Y = labels
+        predictions = [
+            circuit(ising_configs[i], params)[0] * 2 - 1 for i in range(DATA_SIZE)
+        ]
 
-    # optimize your circuit here
+        # QHACK #
+
+        return square_loss(Y, predictions)  # DO NOT MODIFY this line
+
+    init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1])
+    opt = qml.AdamOptimizer(stepsize=0.8)
+    steps = 10
+    params = init_params
+
+    for _ in range(steps):
+        params = opt.step(cost, params)
+
+    predictions = [
+        int(np.around(circuit(ising_configs[i], params)[0]) * 2 - 1)
+        for i in range(DATA_SIZE)
+    ]
 
     # QHACK #
 
@@ -92,7 +132,7 @@ def classify_ising_data(ising_configs, labels):
 
 if __name__ == "__main__":
     inputs = np.array(
-        sys.stdin.read().split(","), dtype=int, requires_grad=False
+        sys.stdin.read().split(","), dtype=int, requires_grad=True
     ).reshape(DATA_SIZE, -1)
     ising_configs = inputs[:, :-1]
     labels = inputs[:, -1]
