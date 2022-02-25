@@ -4,7 +4,6 @@ import sys
 
 import pennylane as qml
 from pennylane import numpy as np
-from itertools import combinations, permutations
 
 NUM_WIRES = 6
 
@@ -28,10 +27,10 @@ def triple_excitation_matrix(gamma):
     idx1 = bins.index("000111")
     idx2 = bins.index("111000")
 
-    matrix[idx1, idx1] = np.cos(gamma)
-    matrix[idx2, idx1] = np.sin(gamma)
-    matrix[idx1, idx2] = -np.sin(gamma)
-    matrix[idx2, idx2] = np.cos(gamma)
+    matrix[idx1, idx1] = np.cos(gamma / 2)
+    matrix[idx2, idx1] = np.sin(gamma / 2)
+    matrix[idx1, idx2] = -np.sin(gamma / 2)
+    matrix[idx2, idx2] = np.cos(gamma / 2)
 
     return matrix
 
