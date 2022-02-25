@@ -20,6 +20,50 @@ def ground_state_VQE(H):
 
     # QHACK #
 
+    n_qubits = len(H.wires)
+    dev = qml.device("default.qubit", wires=n_qubits)
+
+    def circuit(angle, wires):
+        qml.PauliX(0)
+        qml.PauliX(1)
+        qml.DoubleExcitation(angle, wires=[0, 1, 2, 3])
+
+    @qml.qnode(dev)
+    def cost_fn(angle):
+        circuit(angle, wires=range(n_qubits))
+        return qml.expval(H)
+
+    opt = qml.GradientDescentOptimizer(stepsize=0.4)
+    theta = np.array(0.0)
+    energy = [cost_fn(theta)]
+
+    angles = [theta]
+
+    max_iterations = 100
+    conv_tol = 1e-06
+    for _ in range(max_iterations):
+        theta, prev_energy = opt.step_and_cost(cost_fn, theta)
+
+        energy.append(cost_fn(theta))
+        angles.append(theta)
+
+        if np.abs(energy[-1] - prev_energy) <= conv_tol:
+            break
+
+    ground_state_energy = energy[-1]
+    optimal_angle = angles[-1]
+
+    dev = qml.device("default.qubit", wires=n_qubits)
+
+    @qml.qnode(dev)
+    def find_state(param):
+        circuit(param, wires=range(n_qubits))
+        return qml.state()
+
+    ground_state = find_state(optimal_angle)
+
+    return ground_state_energy, ground_state
+
     # QHACK #
 
 
@@ -37,6 +81,12 @@ def create_H1(ground_state, beta, H):
 
     # QHACK #
 
+    ground_state_density = np.outer(ground_state, np.conj(ground_state))
+
+    n_qubits = len(H.wires)
+    H_matrix = qml.utils.sparse_hamiltonian(H).toarray()
+    return qml.Hermitian(beta * ground_state_density + H_matrix, wires=range(n_qubits))
+
     # QHACK #
 
 
@@ -51,6 +101,41 @@ def excited_state_VQE(H1):
     """
 
     # QHACK #
+
+    n_qubits = len(H.wires)
+    dev = qml.device("default.qubit", wires=n_qubits)
+
+    def circuit(angle):
+        qml.PauliX(0)
+        qml.PauliX(2)
+        qml.DoubleExcitation(angle, wires=[0, 1, 2, 3])
+
+    @qml.qnode(dev)
+    def cost(angle):
+        circuit(angle)
+        return qml.expval(H1)
+
+    opt = qml.GradientDescentOptimizer(stepsize=0.4)
+    theta = np.array(0.0)
+    angle = [theta]
+
+    max_iterations = 100
+    conv_tol = 1e-06
+    min_loss = 100
+
+    for _ in range(max_iterations):
+        theta, prev_energy = opt.step_and_cost(cost, theta)
+
+        loss = cost(theta)
+        angle.append(theta)
+
+        if loss < min_loss:
+            min_loss = loss
+
+        if np.abs(loss - prev_energy) <= conv_tol:
+            break
+
+    return cost(theta)
 
     # QHACK #
 

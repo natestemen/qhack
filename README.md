@@ -26,7 +26,7 @@
 - [x] optimizing measurements
 - [x] Givens universality
 - [x] triple Givens
-- [ ] mind the gap
+- [x] mind the gap
 
 ### Quantum Machine Learning
 - [x] generating Fourier basis
