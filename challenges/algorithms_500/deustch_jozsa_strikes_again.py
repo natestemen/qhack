@@ -1,141 +1,114 @@
 #!/usr/bin/env python3
 
 import sys
-
-import pennylane as qml
-import pennylane.optimize as optimize
 from pennylane import numpy as np
+import pennylane as qml
 
-DATA_SIZE = 250
 
+def deutsch_jozsa(fs):
+    """Function that determines whether four given functions are all of the same type or not.
 
-def square_loss(labels, predictions):
-    """Computes the standard square loss between model predictions and true labels.
     Args:
-        - labels (list(int)): True labels (1/-1 for the ordered/disordered phases)
-        - predictions (list(int)): Model predictions (1/-1 for the ordered/disordered phases)
+        - fs (list(function)): A list of 4 quantum functions. Each of them will accept a 'wires' parameter.
+        The first two wires refer to the input and the third to the output of the function.
+
     Returns:
-        - loss (float): the square loss
-    """
-
-    loss = 0
-    for l, p in zip(labels, predictions):
-        loss = loss + (l - p) ** 2
-
-    loss = loss / len(labels)
-    return loss
-
-
-def accuracy(labels, predictions):
-    """Computes the accuracy of the model's predictions against the true labels.
-    Args:
-        - labels (list(int)): True labels (1/-1 for the ordered/disordered phases)
-        - predictions (list(int)): Model predictions (1/-1 for the ordered/disordered phases)
-    Returns:
-        - acc (float): The accuracy.
-    """
-
-    acc = 0
-    for l, p in zip(labels, predictions):
-        if abs(l - p) < 1e-5:
-            acc = acc + 1
-    acc = acc / len(labels)
-
-    return acc
-
-
-def classify_ising_data(ising_configs, labels):
-    """Learn the phases of the classical Ising model.
-    Args:
-        - ising_configs (np.ndarray): 250 rows of binary (0 and 1) Ising model configurations
-        - labels (np.ndarray): 250 rows of labels (1 or -1)
-    Returns:
-        - predictions (list(int)): Your final model predictions
-    Feel free to add any other functions than `cost` and `circuit` within the "# QHACK #" markers
-    that you might need.
+        - (str) : "4 same" or "2 and 2"
     """
 
     # QHACK #
+    dev = qml.device("default.qubit", wires=6, shots=1)
 
-    num_wires = ising_configs.shape[1]
-    dev = qml.device("default.qubit", wires=num_wires)
-
-    # Define a variational circuit below with your needed arguments and return something meaningful
     @qml.qnode(dev)
-    def circuit(configs, params):
+    def circuit():
+        function_number_wires = [0,1]
+        function_input_wires = [2,3]
+        function_output_wires = [4]
+        help_wires = [5]
 
-        angles1 = [
-            configs[i] * params[i] + params[i + num_wires] for i in range(num_wires)
-        ]
-        angles2 = [
-            configs[i] * params[i + 2*num_wires] + params[i + 3*num_wires] for i in range(num_wires)
-        ]
-        angles3 = [
-            configs[i] * params[i + 4*num_wires] + params[i + 5*num_wires] for i in range(num_wires)
-        ]
-        qml.broadcast(
-            qml.RY,
-            wires=range(num_wires),
-            parameters=angles1,
-            pattern="single",
-        )
-        qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
-        qml.broadcast(
-            qml.RY,
-            wires=range(num_wires),
-            parameters=angles2,
-            pattern="single",
-        )
-        qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
-        qml.broadcast(
-            qml.RY,
-            wires=range(num_wires),
-            parameters=angles3,
-            pattern="single",
-        )
-        qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
-
-        return qml.probs(wires=3)
-
-    # Define a cost function below with your needed arguments
-    def cost(params):
-
-        # QHACK #
-
-        Y = labels
-        predictions = [
-            circuit(ising_configs[i], params)[0] * 2 - 1 for i in range(DATA_SIZE)
-        ]
-
-        # QHACK #
-
-        return square_loss(Y, predictions)  # DO NOT MODIFY this line
-
-    init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1]*3)
-    opt = qml.AdagradOptimizer(stepsize=0.5)
-    steps = 10
-    params = init_params
-
-    for _ in range(steps):
-        params = opt.step(cost, params)
-
-    predictions = [
-        int(np.around(circuit(ising_configs[i], params)[0]) * 2 - 1)
-        for i in range(DATA_SIZE)
-    ]
-
+    
+        qml.Hadamard(wires=0)
+        qml.Hadamard(wires=1)
+    
+        qml.Hadamard(wires=2)
+        qml.Hadamard(wires=3)
+    
+        qml.PauliX(wires=4)
+        qml.Hadamard(wires=4)
+        
+        qml.PauliX(wires=5)
+        qml.Hadamard(wires=5)
+    
+    
+        U1 = qml.transforms.get_unitary_matrix(f1,wire_order=[2,3,4])([2,3,4])
+        U2 = qml.transforms.get_unitary_matrix(f2,wire_order=[2,3,4])([2,3,4])
+        U3 = qml.transforms.get_unitary_matrix(f3,wire_order=[2,3,4])([2,3,4])
+        U4 = qml.transforms.get_unitary_matrix(f4,wire_order=[2,3,4])([2,3,4])  
+        I1 = np.zeros([4,4])
+        I1[0,0] = 1
+        I2 = np.zeros([4,4])
+        I2[1,1] = 1
+        I3 = np.zeros([4,4])
+        I3[2,2] = 1
+        I4 = np.zeros([4,4])
+        I4[3,3] = 1
+        U = np.kron(I1, U1)+np.kron(I2, U2)+np.kron(I3, U3)+np.kron(I4, U4)
+    
+        qml.QubitUnitary(U,wires=[0,1,2,3,4])
+    
+        qml.Hadamard(wires=2)
+        qml.Hadamard(wires=3)
+        qml.PauliX(wires=2)
+        qml.PauliX(wires=3)
+        qml.Toffoli(wires=[2,3,5])
+        
+        qml.PauliX(wires=2)
+        qml.PauliX(wires=3)
+        qml.Hadamard(wires=2)
+        qml.Hadamard(wires=3)
+        qml.QubitUnitary(U,wires=[0,1,2,3,4])
+    
+    
+        qml.Hadamard(wires=0)
+        qml.Hadamard(wires=1)
+        
+        return qml.sample(wires=[0,1])
+    
+    sample = circuit()
+    
+    if sample[0] == 0 and sample[1] == 0:
+        return "4 same"
+    else:
+        return "2 and 2"
+        
+    
     # QHACK #
-
-    return predictions
-    #return accuracy(labels, predictions)
 
 
 if __name__ == "__main__":
-    inputs = np.array(
-        sys.stdin.read().split(","), dtype=int, requires_grad=True
-    ).reshape(DATA_SIZE, -1)
-    ising_configs = inputs[:, :-1]
-    labels = inputs[:, -1]
-    predictions = classify_ising_data(ising_configs, labels)
-    print(*predictions, sep=",")
-   
+    # DO NOT MODIFY anything in this code block
+    inputs = sys.stdin.read().split(",")
+    numbers = [int(i) for i in inputs]
+
+    # Definition of the four oracles we will work with.
+
+    def f1(wires):
+        qml.CNOT(wires=[wires[numbers[0]], wires[2]])
+        qml.CNOT(wires=[wires[numbers[1]], wires[2]])
+
+    def f2(wires):
+        qml.CNOT(wires=[wires[numbers[2]], wires[2]])
+        qml.CNOT(wires=[wires[numbers[3]], wires[2]])
+
+    def f3(wires):
+        qml.CNOT(wires=[wires[numbers[4]], wires[2]])
+        qml.CNOT(wires=[wires[numbers[5]], wires[2]])
+        qml.PauliX(wires=wires[2])
+
+    def f4(wires):
+        qml.CNOT(wires=[wires[numbers[6]], wires[2]])
+        qml.CNOT(wires=[wires[numbers[7]], wires[2]])
+        qml.PauliX(wires=wires[2])
+
+    output = deutsch_jozsa([f1, f2, f3, f4])
+    print(f"{output}")
