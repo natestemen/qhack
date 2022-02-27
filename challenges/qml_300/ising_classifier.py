@@ -68,10 +68,12 @@ def classify_ising_data(ising_configs, labels):
             configs[i] * params[i] + params[i + num_wires] for i in range(num_wires)
         ]
         angles2 = [
-            configs[i] * params[i + 2*num_wires] + params[i + 3*num_wires] for i in range(num_wires)
+            configs[i] * params[i + 2 * num_wires] + params[i + 3 * num_wires]
+            for i in range(num_wires)
         ]
         angles3 = [
-            configs[i] * params[i + 4*num_wires] + params[i + 5*num_wires] for i in range(num_wires)
+            configs[i] * params[i + 4 * num_wires] + params[i + 5 * num_wires]
+            for i in range(num_wires)
         ]
         qml.broadcast(
             qml.RY,
@@ -111,8 +113,7 @@ def classify_ising_data(ising_configs, labels):
 
         return square_loss(Y, predictions)  # DO NOT MODIFY this line
 
-
-    init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1]*3)
+    init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1] * 3)
     opt = qml.AdagradOptimizer(stepsize=0.5)
     steps = 10
     params = init_params
@@ -128,7 +129,7 @@ def classify_ising_data(ising_configs, labels):
     # QHACK #
 
     return predictions
-    #return accuracy(labels, predictions)
+    # return accuracy(labels, predictions)
 
 
 if __name__ == "__main__":
@@ -139,5 +140,3 @@ if __name__ == "__main__":
     labels = inputs[:, -1]
     predictions = classify_ising_data(ising_configs, labels)
     print(*predictions, sep=",")
-    
-    

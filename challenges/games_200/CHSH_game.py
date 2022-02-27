@@ -18,11 +18,12 @@ def prepare_entangled(alpha, beta):
     """
 
     # QHACK #
-    theta = np.arctan(beta/alpha)
-    qml.RY(2*theta,wires=0)
-    qml.CNOT(wires=[0,1])
+    theta = np.arctan(beta / alpha)
+    qml.RY(2 * theta, wires=0)
+    qml.CNOT(wires=[0, 1])
 
     # QHACK #
+
 
 @qml.qnode(dev)
 def chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, x, y, alpha, beta):
@@ -47,15 +48,14 @@ def chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, x, y, alpha, beta):
     # QHACK #
     theta_A = [theta_A0, theta_A1]
     theta_B = [theta_B0, theta_B1]
-    
-    qml.RY(-1*theta_A[x],wires=0)
-    qml.RY(-1*theta_B[y],wires=1)
-          
+
+    qml.RY(-1 * theta_A[x], wires=0)
+    qml.RY(-1 * theta_B[y], wires=1)
 
     # QHACK #
 
     return qml.probs(wires=[0, 1])
-    
+
 
 def winning_prob(params, alpha, beta):
     """Define a function that returns the probability of Alice and Bob winning the game.
@@ -70,23 +70,24 @@ def winning_prob(params, alpha, beta):
     """
 
     # QHACK #
-    theta_A0=params[0]
-    theta_A1=params[1]
-    theta_B0=params[2]
-    theta_B1=params[3]
-    prob = (chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 0, alpha, beta)[0]+\
-        chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 0, alpha, beta)[3]+\
-            chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 1, alpha, beta)[0]+\
-                chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 1, alpha, beta)[3]+\
-                    chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 0, alpha, beta)[0]+\
-                        chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 0, alpha, beta)[3]+\
-                            chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 1, alpha, beta)[1]+\
-                                chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 1, alpha, beta)[2])/4
+    theta_A0 = params[0]
+    theta_A1 = params[1]
+    theta_B0 = params[2]
+    theta_B1 = params[3]
+    prob = (
+        chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 0, 0, alpha, beta)[0]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 0, 0, alpha, beta)[3]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 0, 1, alpha, beta)[0]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 0, 1, alpha, beta)[3]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 1, 0, alpha, beta)[0]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 1, 0, alpha, beta)[3]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 1, 1, alpha, beta)[1]
+        + chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, 1, 1, alpha, beta)[2]
+    ) / 4
     return prob
-        
 
     # QHACK #
-    
+
 
 def optimize(alpha, beta):
     """Define a function that optimizes theta_A0, theta_A1, theta_B0, theta_B1 to maximize the probability of winning the game
@@ -101,22 +102,22 @@ def optimize(alpha, beta):
 
     def cost(params):
         """Define a cost function that only depends on params, given alpha and beta fixed"""
-        return 1-winning_prob(params, alpha, beta)
+        return 1 - winning_prob(params, alpha, beta)
 
     # QHACK #
 
-    #Initialize parameters, choose an optimization method and number of steps
-    init_params = np.array([0,np.pi/2,np.pi/2,0])
+    # Initialize parameters, choose an optimization method and number of steps
+    init_params = np.array([0, np.pi / 2, np.pi / 2, 0])
     opt = qml.AdamOptimizer(stepsize=0.8)
     steps = 300
 
     # QHACK #
-    
+
     # set the initial parameter values
     params = init_params
 
     for i in range(steps):
-        # update the circuit parameters 
+        # update the circuit parameters
         # QHACK #
 
         params = opt.step(cost, params)
@@ -126,7 +127,7 @@ def optimize(alpha, beta):
     return winning_prob(params, alpha, beta)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     inputs = sys.stdin.read().split(",")
     output = optimize(float(inputs[0]), float(inputs[1]))
     print(f"{output}")

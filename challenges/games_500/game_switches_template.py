@@ -1,8 +1,9 @@
 #! /usr/bin/python3
 
 import sys
-from pennylane import numpy as np
+
 import pennylane as qml
+from pennylane import numpy as np
 
 
 def switch(oracle):
@@ -21,23 +22,22 @@ def switch(oracle):
 
     @qml.qnode(dev)
     def circuit():
-        
+
         # QHACK #
 
         qml.Hadamard(wires=0)
         qml.Hadamard(wires=1)
         qml.Hadamard(wires=2)
-        
+
         qml.PauliX(wires="light")
         qml.Hadamard(wires="light")
 
-        
         oracle()
 
         qml.Hadamard(wires=0)
         qml.Hadamard(wires=1)
         qml.Hadamard(wires=2)
-        
+
         # QHACK #
 
         return qml.sample(wires=range(3))
@@ -63,4 +63,3 @@ if __name__ == "__main__":
 
     output = switch(oracle)
     print(*output, sep=",")
-
