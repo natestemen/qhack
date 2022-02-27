@@ -26,7 +26,7 @@ def deutsch_jozsa(oracle):
 
         qml.Hadamard(wires=0)
         qml.Hadamard(wires=1)
-        qml.RX(np.pi, wires=2)
+        qml.PauliX(wires=2)
         qml.Hadamard(wires=2)
 
         oracle()  # DO NOT MODIFY this line

@@ -51,6 +51,7 @@ def classify_ising_data(ising_configs, labels):
         - labels (np.ndarray): 250 rows of labels (1 or -1)
     Returns:
         - predictions (list(int)): Your final model predictions
+
     Feel free to add any other functions than `cost` and `circuit` within the "# QHACK #" markers
     that you might need.
     """
@@ -63,7 +64,6 @@ def classify_ising_data(ising_configs, labels):
     # Define a variational circuit below with your needed arguments and return something meaningful
     @qml.qnode(dev)
     def circuit(configs, params):
-
         angles1 = [
             configs[i] * params[i] + params[i + num_wires] for i in range(num_wires)
         ]
@@ -110,6 +110,7 @@ def classify_ising_data(ising_configs, labels):
         # QHACK #
 
         return square_loss(Y, predictions)  # DO NOT MODIFY this line
+
 
     init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1]*3)
     opt = qml.AdagradOptimizer(stepsize=0.5)

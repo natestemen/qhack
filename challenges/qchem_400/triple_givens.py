@@ -20,6 +20,20 @@ def triple_excitation_matrix(gamma):
 
     # QHACK #
 
+    dim = 2**NUM_WIRES
+    matrix = np.eye(dim)
+
+    bins = [np.binary_repr(i, width=6) for i in range(dim)]
+    idx1 = bins.index("000111")
+    idx2 = bins.index("111000")
+
+    matrix[idx1, idx1] = np.cos(gamma / 2)
+    matrix[idx2, idx1] = np.sin(gamma / 2)
+    matrix[idx1, idx2] = -np.sin(gamma / 2)
+    matrix[idx2, idx2] = np.cos(gamma / 2)
+
+    return matrix
+
     # QHACK #
 
 
@@ -39,6 +53,12 @@ def circuit(angles):
     """
 
     # QHACK #
+    alpha, beta, gamma = angles
+    qml.BasisState(np.array([1, 1, 1, 0, 0, 0]), wires=[0, 1, 2, 3, 4, 5])
+
+    qml.SingleExcitation(alpha, wires=[0, 5])
+    qml.DoubleExcitation(beta, wires=[0, 1, 4, 5])
+    qml.QubitUnitary(triple_excitation_matrix(gamma), wires=[0, 1, 2, 3, 4, 5])
 
     # QHACK #
 
