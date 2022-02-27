@@ -11,11 +11,9 @@ DATA_SIZE = 250
 
 def square_loss(labels, predictions):
     """Computes the standard square loss between model predictions and true labels.
-
     Args:
         - labels (list(int)): True labels (1/-1 for the ordered/disordered phases)
         - predictions (list(int)): Model predictions (1/-1 for the ordered/disordered phases)
-
     Returns:
         - loss (float): the square loss
     """
@@ -30,11 +28,9 @@ def square_loss(labels, predictions):
 
 def accuracy(labels, predictions):
     """Computes the accuracy of the model's predictions against the true labels.
-
     Args:
         - labels (list(int)): True labels (1/-1 for the ordered/disordered phases)
         - predictions (list(int)): Model predictions (1/-1 for the ordered/disordered phases)
-
     Returns:
         - acc (float): The accuracy.
     """
@@ -50,11 +46,9 @@ def accuracy(labels, predictions):
 
 def classify_ising_data(ising_configs, labels):
     """Learn the phases of the classical Ising model.
-
     Args:
         - ising_configs (np.ndarray): 250 rows of binary (0 and 1) Ising model configurations
         - labels (np.ndarray): 250 rows of labels (1 or -1)
-
     Returns:
         - predictions (list(int)): Your final model predictions
 
@@ -70,28 +64,33 @@ def classify_ising_data(ising_configs, labels):
     # Define a variational circuit below with your needed arguments and return something meaningful
     @qml.qnode(dev)
     def circuit(configs, params):
-
-        angles = [
+        angles1 = [
             configs[i] * params[i] + params[i + num_wires] for i in range(num_wires)
+        ]
+        angles2 = [
+            configs[i] * params[i + 2*num_wires] + params[i + 3*num_wires] for i in range(num_wires)
+        ]
+        angles3 = [
+            configs[i] * params[i + 4*num_wires] + params[i + 5*num_wires] for i in range(num_wires)
         ]
         qml.broadcast(
             qml.RY,
             wires=range(num_wires),
-            parameters=angles,
+            parameters=angles1,
             pattern="single",
         )
         qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
         qml.broadcast(
             qml.RY,
             wires=range(num_wires),
-            parameters=angles,
+            parameters=angles2,
             pattern="single",
         )
         qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
         qml.broadcast(
             qml.RY,
             wires=range(num_wires),
-            parameters=angles,
+            parameters=angles3,
             pattern="single",
         )
         qml.broadcast(qml.CNOT, wires=range(num_wires), pattern="ring")
@@ -112,8 +111,9 @@ def classify_ising_data(ising_configs, labels):
 
         return square_loss(Y, predictions)  # DO NOT MODIFY this line
 
-    init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1])
-    opt = qml.AdamOptimizer(stepsize=0.8)
+
+    init_params = np.array([1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.1, 0.1]*3)
+    opt = qml.AdagradOptimizer(stepsize=0.5)
     steps = 10
     params = init_params
 
@@ -128,6 +128,7 @@ def classify_ising_data(ising_configs, labels):
     # QHACK #
 
     return predictions
+    #return accuracy(labels, predictions)
 
 
 if __name__ == "__main__":
@@ -138,3 +139,5 @@ if __name__ == "__main__":
     labels = inputs[:, -1]
     predictions = classify_ising_data(ising_configs, labels)
     print(*predictions, sep=",")
+    
+    

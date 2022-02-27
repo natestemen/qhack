@@ -18,6 +18,9 @@ def prepare_entangled(alpha, beta):
     """
 
     # QHACK #
+    theta = np.arctan(beta/alpha)
+    qml.RY(2*theta,wires=0)
+    qml.CNOT(wires=[0,1])
 
     # QHACK #
 
@@ -28,8 +31,8 @@ def chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, x, y, alpha, beta):
     Args:
         - theta_A0 (float): angle that Alice chooses when she receives x=0
         - theta_A1 (float): angle that Alice chooses when she receives x=1
-        - theta_B0 (float): angle that Bob chooses when he receives x=0
-        - theta_B1 (float): angle that Bob chooses when he receives x=1
+        - theta_B0 (float): angle that Bob chooses when he receives y=0
+        - theta_B1 (float): angle that Bob chooses when he receives y=1
         - x (int): bit received by Alice
         - y (int): bit received by Bob
         - alpha (float): real coefficient of |00>
@@ -42,6 +45,12 @@ def chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, x, y, alpha, beta):
     prepare_entangled(alpha, beta)
 
     # QHACK #
+    theta_A = [theta_A0, theta_A1]
+    theta_B = [theta_B0, theta_B1]
+    
+    qml.RY(-1*theta_A[x],wires=0)
+    qml.RY(-1*theta_B[y],wires=1)
+          
 
     # QHACK #
 
@@ -61,6 +70,20 @@ def winning_prob(params, alpha, beta):
     """
 
     # QHACK #
+    theta_A0=params[0]
+    theta_A1=params[1]
+    theta_B0=params[2]
+    theta_B1=params[3]
+    prob = (chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 0, alpha, beta)[0]+\
+        chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 0, alpha, beta)[3]+\
+            chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 1, alpha, beta)[0]+\
+                chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,0, 1, alpha, beta)[3]+\
+                    chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 0, alpha, beta)[0]+\
+                        chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 0, alpha, beta)[3]+\
+                            chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 1, alpha, beta)[1]+\
+                                chsh_circuit(theta_A0,theta_A1,theta_B0,theta_B1,1, 1, alpha, beta)[2])/4
+    return prob
+        
 
     # QHACK #
     
@@ -78,13 +101,14 @@ def optimize(alpha, beta):
 
     def cost(params):
         """Define a cost function that only depends on params, given alpha and beta fixed"""
+        return 1-winning_prob(params, alpha, beta)
 
     # QHACK #
 
     #Initialize parameters, choose an optimization method and number of steps
-    init_params = 
-    opt =
-    steps =
+    init_params = np.array([0,np.pi/2,np.pi/2,0])
+    opt = qml.AdamOptimizer(stepsize=0.8)
+    steps = 300
 
     # QHACK #
     
@@ -95,7 +119,7 @@ def optimize(alpha, beta):
         # update the circuit parameters 
         # QHACK #
 
-        params = 
+        params = opt.step(cost, params)
 
         # QHACK #
 

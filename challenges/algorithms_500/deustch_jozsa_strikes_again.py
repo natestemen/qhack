@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
-
-import pennylane as qml
 from pennylane import numpy as np
+import pennylane as qml
 
 
 def deutsch_jozsa(fs):
@@ -18,7 +17,71 @@ def deutsch_jozsa(fs):
     """
 
     # QHACK #
+    dev = qml.device("default.qubit", wires=6, shots=1)
 
+    @qml.qnode(dev)
+    def circuit():
+        function_number_wires = [0,1]
+        function_input_wires = [2,3]
+        function_output_wires = [4]
+        help_wires = [5]
+
+    
+        qml.Hadamard(wires=0)
+        qml.Hadamard(wires=1)
+    
+        qml.Hadamard(wires=2)
+        qml.Hadamard(wires=3)
+    
+        qml.PauliX(wires=4)
+        qml.Hadamard(wires=4)
+        
+        qml.PauliX(wires=5)
+        qml.Hadamard(wires=5)
+    
+    
+        U1 = qml.transforms.get_unitary_matrix(f1,wire_order=[2,3,4])([2,3,4])
+        U2 = qml.transforms.get_unitary_matrix(f2,wire_order=[2,3,4])([2,3,4])
+        U3 = qml.transforms.get_unitary_matrix(f3,wire_order=[2,3,4])([2,3,4])
+        U4 = qml.transforms.get_unitary_matrix(f4,wire_order=[2,3,4])([2,3,4])  
+        I1 = np.zeros([4,4])
+        I1[0,0] = 1
+        I2 = np.zeros([4,4])
+        I2[1,1] = 1
+        I3 = np.zeros([4,4])
+        I3[2,2] = 1
+        I4 = np.zeros([4,4])
+        I4[3,3] = 1
+        U = np.kron(I1, U1)+np.kron(I2, U2)+np.kron(I3, U3)+np.kron(I4, U4)
+    
+        qml.QubitUnitary(U,wires=[0,1,2,3,4])
+    
+        qml.Hadamard(wires=2)
+        qml.Hadamard(wires=3)
+        qml.PauliX(wires=2)
+        qml.PauliX(wires=3)
+        qml.Toffoli(wires=[2,3,5])
+        
+        qml.PauliX(wires=2)
+        qml.PauliX(wires=3)
+        qml.Hadamard(wires=2)
+        qml.Hadamard(wires=3)
+        qml.QubitUnitary(U,wires=[0,1,2,3,4])
+    
+    
+        qml.Hadamard(wires=0)
+        qml.Hadamard(wires=1)
+        
+        return qml.sample(wires=[0,1])
+    
+    sample = circuit()
+    
+    if sample[0] == 0 and sample[1] == 0:
+        return "4 same"
+    else:
+        return "2 and 2"
+        
+    
     # QHACK #
 
 
